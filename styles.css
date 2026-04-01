@@ -1,71 +1,365 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Il Quartiere nel Pallone</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="app">
-    <header class="header">
-      <h1>Il Quartiere nel Pallone</h1>
-      <p class="subtitle">10 domande di calcio, 15 secondi per rispondere, niente rigioca.</p>
-    </header>
+* {
+  box-sizing: border-box;
+}
 
-    <main id="game-container" class="card">
-      <div id="start-screen">
-        <h2>Quiz calcio</h2>
-        <p>
-          Domande specifiche, trabocchetti, record, flop e curiosità sul calcio.
-        </p>
-        <button id="start-btn">Inizia il quiz</button>
-      </div>
+:root {
+  --bg-1: #07111f;
+  --bg-2: #0d1b2f;
+  --card: rgba(14, 24, 41, 0.88);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text: #f5f7fb;
+  --muted: #b8c4d9;
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --red: #ef4444;
+  --red-dark: #b91c1c;
+  --blue: #38bdf8;
+  --gold: #fbbf24;
+  --answer: rgba(255, 255, 255, 0.06);
+  --answer-hover: rgba(255, 255, 255, 0.12);
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
 
-      <div id="quiz-screen" class="hidden">
-        <div class="top-bar">
-          <div id="question-counter">Domanda 1 / 10</div>
-          <div id="timer">15</div>
-        </div>
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, #12345e 0%, transparent 35%),
+    radial-gradient(circle at bottom right, #134e4a 0%, transparent 30%),
+    linear-gradient(135deg, var(--bg-1), var(--bg-2));
+}
 
-        <div class="progress-bar">
-          <div id="progress-fill"></div>
-        </div>
+body {
+  position: relative;
+  overflow-x: hidden;
+}
 
-        <h2 id="question-text"></h2>
+.background-glow {
+  position: fixed;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.25;
+  pointer-events: none;
+}
 
-        <div id="answers-container" class="answers"></div>
+.glow-1 {
+  width: 260px;
+  height: 260px;
+  background: #22c55e;
+  top: 40px;
+  left: -60px;
+}
 
-        <div id="feedback" class="feedback hidden">
-          <p id="feedback-text"></p>
-          <div id="image-box" class="image-box hidden">
-            <img id="answer-image" src="" alt="Immagine risposta corretta" />
-            <p id="image-caption"></p>
-          </div>
-          <button id="next-btn">Avanti</button>
-        </div>
-      </div>
+.glow-2 {
+  width: 300px;
+  height: 300px;
+  background: #38bdf8;
+  right: -80px;
+  bottom: 40px;
+}
 
-      <div id="end-screen" class="hidden">
-        <h2>Quiz completato</h2>
-        <p id="final-score"></p>
-        <p class="locked-message">
-          Hai già giocato questa partita. Non esiste il pulsante “rigioca”.
-        </p>
-      </div>
+.app-shell {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  position: relative;
+  z-index: 1;
+}
 
-      <div id="locked-screen" class="hidden">
-        <h2>Quiz già giocato</h2>
-        <p>
-          Su questo dispositivo il quiz è già stato completato una volta.
-        </p>
-        <p class="locked-message">
-          “Il Quartiere nel Pallone” si può giocare una volta sola.
-        </p>
-      </div>
-    </main>
-  </div>
+.hero {
+  text-align: center;
+  margin-bottom: 22px;
+}
 
-  <script src="script.js"></script>
-</body>
-</html>
+.hero-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #bfe9ff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  margin: 0 0 10px;
+  font-size: 2.6rem;
+  line-height: 1.05;
+}
+
+.hero p {
+  margin: 0 auto;
+  max-width: 700px;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.game-card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+
+.screen {
+  text-align: center;
+}
+
+.screen-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.screen h2 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+}
+
+.screen p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0 auto 18px;
+  max-width: 620px;
+}
+
+.rules-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 24px auto 24px;
+  max-width: 620px;
+}
+
+.rule-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 18px 12px;
+}
+
+.rule-item span {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.rule-item small {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.main-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 15px 22px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  color: #04110a;
+  background: linear-gradient(135deg, var(--green), #86efac);
+  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.main-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(34, 197, 94, 0.35);
+}
+
+.secondary-btn {
+  color: #03121b;
+  background: linear-gradient(135deg, var(--blue), #bae6fd);
+  box-shadow: 0 12px 28px rgba(56, 189, 248, 0.25);
+}
+
+.quiz-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.question-pill {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  color: #ffe8a3;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.timer-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 35%),
+    linear-gradient(135deg, #ef4444, #f97316);
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#timer {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(11, 18, 32, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: white;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+#progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #38bdf8);
+  transition: width 0.3s ease;
+}
+
+.question-title {
+  text-align: left;
+  font-size: 1.7rem;
+  line-height: 1.35;
+  margin: 0 0 22px;
+}
+
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.answer-btn {
+  width: 100%;
+  min-height: 72px;
+  text-align: left;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--answer);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.answer-btn:hover {
+  background: var(--answer-hover);
+  transform: translateY(-1px);
+}
+
+.answer-btn.correct {
+  background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(22,163,74,0.2));
+  border-color: rgba(74, 222, 128, 0.9);
+}
+
+.answer-btn.wrong {
+  background: linear-gradient(135deg, rgba(239,68,68,0.28), rgba(185,28,28,0.2));
+  border-color: rgba(248, 113, 113, 0.9);
+}
+
+.feedback {
+  margin-top: 22px;
+  padding: 18px;
+  background: rgba(2, 10, 20, 0.55);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 22px;
+  text-align: left;
+}
+
+.feedback p {
+  margin: 0 0 14px;
+  color: var(--text);
+}
+
+.image-box {
+  margin: 8px 0 18px;
+  text-align: center;
+}
+
+.image-box img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+#image-caption {
+  color: var(--muted);
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+.locked-message {
+  color: #fecaca !important;
+  font-weight: 800;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .game-card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .quiz-top {
+    align-items: flex-start;
+  }
+
+  .question-title {
+    font-size: 1.28rem;
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-box {
+    grid-template-columns: 1fr;
+  }
+}
