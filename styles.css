@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Il Quartiere nel Pallone</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Il Quartiere nel Pallone</h1>
+      <p class="subtitle">10 domande di calcio, 15 secondi per rispondere, niente rigioca.</p>
+    </header>
+
+    <main id="game-container" class="card">
+      <div id="start-screen">
+        <h2>Quiz calcio</h2>
+        <p>
+          Domande specifiche, trabocchetti, record, flop e curiosità sul calcio.
+        </p>
+        <button id="start-btn">Inizia il quiz</button>
+      </div>
+
+      <div id="quiz-screen" class="hidden">
+        <div class="top-bar">
+          <div id="question-counter">Domanda 1 / 10</div>
+          <div id="timer">15</div>
+        </div>
+
+        <div class="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+
+        <h2 id="question-text"></h2>
+
+        <div id="answers-container" class="answers"></div>
+
+        <div id="feedback" class="feedback hidden">
+          <p id="feedback-text"></p>
+          <div id="image-box" class="image-box hidden">
+            <img id="answer-image" src="" alt="Immagine risposta corretta" />
+            <p id="image-caption"></p>
+          </div>
+          <button id="next-btn">Avanti</button>
+        </div>
+      </div>
+
+      <div id="end-screen" class="hidden">
+        <h2>Quiz completato</h2>
+        <p id="final-score"></p>
+        <p class="locked-message">
+          Hai già giocato questa partita. Non esiste il pulsante “rigioca”.
+        </p>
+      </div>
+
+      <div id="locked-screen" class="hidden">
+        <h2>Quiz già giocato</h2>
+        <p>
+          Su questo dispositivo il quiz è già stato completato una volta.
+        </p>
+        <p class="locked-message">
+          “Il Quartiere nel Pallone” si può giocare una volta sola.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
