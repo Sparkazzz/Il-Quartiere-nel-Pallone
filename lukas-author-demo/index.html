@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d0d0f" />
+  <title>Lukas Pawlak — Autor</title>
+  <meta name="description" content="Autorenseite von Lukas Pawlak — Bücher, Geschichten und Neuigkeiten." />
+  <style>
+    :root{
+      --bg:#0d0d0f;--panel:#151519;--text:#f6f3ec;--muted:#b7b0a4;--line:#2b2a30;--accent:#d8a75f;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+    a{color:inherit;text-decoration:none} img{max-width:100%;display:block}
+    .wrap{width:min(1120px,calc(100% - 36px));margin:auto}
+    header{position:sticky;top:0;z-index:20;background:rgba(13,13,15,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
+    nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{font-family:Georgia,serif;font-size:1.18rem;letter-spacing:.06em}.navlinks{display:flex;gap:26px;color:var(--muted);font-size:.92rem}
+    .navlinks a:hover{color:var(--text)}
+    .hero{min-height:78vh;display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:center;padding:86px 0 64px}
+    .eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.18em;font-size:.78rem;font-weight:700}
+    h1{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:clamp(3rem,7vw,6.6rem);line-height:.95;margin:18px 0 26px;letter-spacing:-.035em}
+    .lead{font-size:clamp(1.05rem,2vw,1.3rem);color:var(--muted);max-width:640px}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}.btn{padding:13px 18px;border-radius:999px;border:1px solid var(--line);font-weight:650}.btn.primary{background:var(--text);color:#111}.btn:hover{transform:translateY(-1px)}
+    .bookstage{display:flex;justify-content:center;perspective:1100px}.book{width:min(330px,75vw);aspect-ratio:.67;background:linear-gradient(145deg,#231c17,#0d0c0c 75%);border-radius:4px 14px 14px 4px;box-shadow:0 35px 70px rgba(0,0,0,.55),inset -10px 0 20px rgba(255,255,255,.03);transform:rotateY(-10deg) rotateZ(1deg);padding:34px;display:flex;flex-direction:column;justify-content:space-between;border-left:8px solid #090909}
+    .book small{letter-spacing:.15em;text-transform:uppercase;color:#d5c5ad}.booktitle{font-family:Georgia,serif;font-size:2.55rem;line-height:1.04}.bookmark{width:56px;height:1px;background:var(--accent);margin:16px 0}.author{color:#e0d8cc;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem}
+    section{padding:88px 0;border-top:1px solid var(--line)}
+    .sectionhead{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:36px}.sectionhead h2{font-family:Georgia,serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:500;margin:0}.sectionhead p{color:var(--muted);max-width:520px;margin:0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;min-height:310px;display:flex;flex-direction:column;justify-content:space-between}
+    .cover{height:210px;border-radius:10px;padding:22px;font-family:Georgia,serif;font-size:1.55rem;display:flex;align-items:end;background:linear-gradient(155deg,#433223,#161515 70%)}
+    .card:nth-child(2) .cover{background:linear-gradient(155deg,#25323a,#111519 70%)}.card:nth-child(3) .cover{background:linear-gradient(155deg,#3e2530,#171216 70%)}
+    .meta{color:var(--muted);font-size:.9rem;margin-top:16px}.meta strong{color:var(--text);display:block;font-size:1.1rem;margin-bottom:3px}
+    .about{display:grid;grid-template-columns:.8fr 1.2fr;gap:70px}.portrait{aspect-ratio:4/5;border-radius:20px;background:radial-gradient(circle at 45% 35%,#4c4c4c 0 9%,#27272a 10% 28%,#151519 29% 100%);position:relative;overflow:hidden;border:1px solid var(--line)}
+    .portrait:after{content:"DEMO PORTRAIT";position:absolute;bottom:18px;left:18px;color:#8e8e91;font-size:.7rem;letter-spacing:.14em}.abouttext h3{font-family:Georgia,serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:500;margin-top:0}.abouttext p{color:var(--muted);font-size:1.05rem}
+    blockquote{font-family:Georgia,serif;font-size:clamp(1.8rem,4vw,3.25rem);line-height:1.18;margin:0;max-width:900px}blockquote span{color:var(--accent)}
+    .newsletter{background:linear-gradient(135deg,#1a1714,#131316);border:1px solid var(--line);border-radius:22px;padding:32px;display:flex;justify-content:space-between;gap:30px;align-items:center}.newsletter h3{font-family:Georgia,serif;font-size:2rem;margin:0 0 8px}.newsletter p{margin:0;color:var(--muted)}
+    footer{padding:34px 0 50px;color:#858087;font-size:.88rem}.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    @media(max-width:760px){.navlinks{display:none}.hero{grid-template-columns:1fr;gap:44px;padding-top:60px}.bookstage{order:-1}.book{width:58vw;min-width:215px}.grid{grid-template-columns:1fr}.about{grid-template-columns:1fr}.portrait{max-width:380px}.sectionhead{display:block}.sectionhead p{margin-top:12px}.newsletter{display:block}.newsletter .btn{display:inline-block;margin-top:20px}section{padding:68px 0}}
+  </style>
+</head>
+<body>
+<header><div class="wrap"><nav><a class="brand" href="#top">LUKAS PAWLAK</a><div class="navlinks"><a href="#books">Bücher</a><a href="#about">Autor</a><a href="#kontakt">Kontakt</a></div></nav></div></header>
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <div class="eyebrow">Autor · Romane & Kurzgeschichten</div>
+      <h1>Geschichten, die nachhallen.</h1>
+      <p class="lead">Lukas Pawlak schreibt Bücher und Geschichten. Diese Demo zeigt, wie seine Werke, Neuigkeiten und Informationen auf einer modernen Autorenseite präsentiert werden können.</p>
+      <div class="actions"><a class="btn primary" href="#books">Bücher entdecken</a><a class="btn" href="#about">Über den Autor</a></div>
+    </div>
+    <div class="bookstage" aria-label="Buchcover Demo"><div class="book"><div><small>Neuer Roman</small><div class="bookmark"></div><div class="booktitle">Das Gewicht<br>der Stille</div></div><div class="author">Lukas Pawlak</div></div></div>
+  </div>
+
+  <section id="books"><div class="wrap"><div class="sectionhead"><h2>Die Bücher</h2><p>Drei beispielhafte Titel. Später können hier echte Cover, Leseproben, Kauf-Links, Rezensionen oder Termine stehen.</p></div>
+    <div class="grid">
+      <article class="card"><div class="cover">Das Gewicht der Stille</div><div class="meta"><strong>Das Gewicht der Stille</strong>Roman · 2026</div></article>
+      <article class="card"><div class="cover">Nordlicht ohne Namen</div><div class="meta"><strong>Nordlicht ohne Namen</strong>Roman · 2024</div></article>
+      <article class="card"><div class="cover">Späte Zimmer</div><div class="meta"><strong>Späte Zimmer</strong>Erzählungen · 2022</div></article>
+    </div>
+  </div></section>
+
+  <section id="about"><div class="wrap about"><div class="portrait"></div><div class="abouttext"><div class="eyebrow">Über den Autor</div><h3>Literatur zwischen Nähe und Unruhe.</h3><p>Hier kann Lukas Pawlaks echte Biografie stehen — zusammen mit Autorenfoto, Veröffentlichungen, Presseinformationen und Auszeichnungen.</p><p>Die Seite ist bewusst schnell, klar und für Smartphones optimiert. Sie kann als einfache Visitenkarte dienen oder später um Shop, Newsletter, Veranstaltungen und einen Blog erweitert werden.</p></div></div></section>
+
+  <section><div class="wrap"><blockquote>„Manche Erinnerungen verschwinden nicht. Sie <span>wechseln nur den Raum.</span>“</blockquote></div></section>
+
+  <section id="kontakt"><div class="wrap"><div class="newsletter"><div><h3>Neuigkeiten vom Schreibtisch</h3><p>Demo für Newsletter, Lesungen, Veröffentlichungen oder direkten Kontakt.</p></div><a class="btn primary" href="mailto:autor@example.com">Kontakt aufnehmen</a></div></div></section>
+</main>
+<footer><div class="wrap foot"><span>© 2026 Lukas Pawlak · Demo-Website</span><span>Impressum · Datenschutz</span></div></footer>
+</body>
+</html>
