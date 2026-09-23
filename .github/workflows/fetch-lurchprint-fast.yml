@@ -1,0 +1,125 @@
+name: Fetch Lurch Print assets fast
+
+on:
+  push:
+    branches: [lukas-author-demo]
+    paths:
+      - '.github/workflows/fetch-lurchprint-fast.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: lukas-author-demo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch public Lurch Print media
+        run: |
+          python - <<'PY'
+          import os,re,ssl,concurrent.futures
+          from urllib.parse import urljoin,urlparse
+          from urllib.request import Request,urlopen
+          from html.parser import HTMLParser
+
+          BASE='https://lurchprint.de/'
+          OUT='lukas-author-demo/assets/lurchprint-fast'
+          os.makedirs(OUT,exist_ok=True)
+          UA='Mozilla/5.0 AppleWebKit/537.36 Chrome/127 Safari/537.36'
+
+          def grab(url,binary=False,timeout=8):
+              req=Request(url,headers={'User-Agent':UA,'Accept':'*/*'})
+              with urlopen(req,timeout=timeout) as r:
+                  d=r.read()
+                  return d if binary else d.decode('utf-8','ignore')
+
+          urls=[BASE]
+          for sm in ['wp-sitemap.xml','sitemap.xml','wp-sitemap-posts-page-1.xml','wp-sitemap-posts-product-1.xml','product-sitemap.xml','page-sitemap.xml']:
+              try:
+                  s=grab(urljoin(BASE,sm),timeout=6)
+                  urls += re.findall(r'<loc>\s*(.*?)\s*</loc>',s,re.I|re.S)
+              except Exception: pass
+          # Add likely public routes explicitly.
+          for p in ['shop/','produkt/','produkte/','ueber-mich/','uber-mich/','autor/','about/','das-kind-mit-der-roten-muetze/','episoden-von-alatar-und-dem-tannhaeuser-tor/']:
+              urls.append(urljoin(BASE,p))
+          # unique site pages only
+          seen=[]
+          for u in urls:
+              u=u.replace('&amp;','&').strip()
+              if urlparse(u).netloc.endswith('lurchprint.de') and u not in seen: seen.append(u)
+          urls=seen[:80]
+
+          class Parser(HTMLParser):
+              def __init__(self): super().__init__(); self.images=[]
+              def handle_starttag(self,tag,attrs):
+                  a=dict(attrs)
+                  if tag in ('img','source'):
+                      for k in ('src','data-src','data-lazy-src','data-original'):
+                          if a.get(k): self.images.append(a[k])
+                      for k in ('srcset','data-srcset'):
+                          if a.get(k):
+                              self.images += [x.strip().split()[0] for x in a[k].split(',') if x.strip()]
+                  if tag=='meta' and a.get('property') in ('og:image','og:image:url','twitter:image') and a.get('content'):
+                      self.images.append(a['content'])
+
+          def fetch_page(u):
+              try: return u,grab(u,timeout=7),''
+              except Exception as e: return u,'',repr(e)
+
+          results=[]
+          with concurrent.futures.ThreadPoolExecutor(max_workers=12) as ex:
+              for r in ex.map(fetch_page,urls): results.append(r)
+
+          imgs=set(); pages=[]
+          for u,html,err in results:
+              pages.append((u,'OK' if html else 'ERR '+err))
+              if not html: continue
+              p=Parser();
+              try:p.feed(html)
+              except Exception:pass
+              # media references in CSS/JSON/markup
+              p.images += re.findall(r'(?:https?:)?//[^\"\'\s)]+?\.(?:jpe?g|png|webp|gif|avif)(?:\?[^\"\'\s)]*)?',html,re.I)
+              p.images += re.findall(r'[^\"\'\s()]+/wp-content/uploads/[^\"\'\s()]+?\.(?:jpe?g|png|webp|gif|avif)(?:\?[^\"\'\s)]*)?',html,re.I)
+              for x in p.images:
+                  if x.startswith('//'): x='https:'+x
+                  x=urljoin(u,x.replace('\\/','/').replace('&amp;','&'))
+                  if urlparse(x).netloc.endswith('lurchprint.de'): imgs.add(x)
+
+          def dl(pair):
+              i,u=pair
+              try:
+                  data=grab(u,True,timeout=10)
+                  if len(data)<2500:return None
+                  ext=os.path.splitext(urlparse(u).path)[1].lower()
+                  if ext not in ('.jpg','.jpeg','.png','.webp','.gif','.avif'):ext='.bin'
+                  base=re.sub(r'[^A-Za-z0-9._-]+','-',os.path.basename(urlparse(u).path) or f'image{ext}')
+                  name=f'{i:03d}-{base}'
+                  open(os.path.join(OUT,name),'wb').write(data)
+                  return name,len(data),u
+              except Exception:return None
+
+          rows=[]
+          with concurrent.futures.ThreadPoolExecutor(max_workers=12) as ex:
+              for r in ex.map(dl,enumerate(sorted(imgs))):
+                  if r: rows.append(r)
+          with open(os.path.join(OUT,'manifest.tsv'),'w',encoding='utf-8') as f:
+              f.write('file\tbytes\tsource\n')
+              for r in rows:f.write('\t'.join(map(str,r))+'\n')
+          with open(os.path.join(OUT,'pages.tsv'),'w',encoding='utf-8') as f:
+              for r in pages:f.write('\t'.join(r)+'\n')
+          print('pages',len(urls),'image refs',len(imgs),'downloaded',len(rows))
+          PY
+      - name: Commit assets
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lukas-author-demo/assets/lurchprint-fast
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Add Lurch Print image assets [skip ci]'
+          git push origin HEAD:lukas-author-demo
