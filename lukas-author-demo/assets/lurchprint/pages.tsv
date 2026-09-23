@@ -1,0 +1,10 @@
+https://lurchprint.de/	OK
+https://lurchprint.de/wp-sitemap.xml	OK
+https://lurchprint.de/sitemap.xml	OK
+https://lurchprint.de/shop/	OK
+https://lurchprint.de/produkt/	ERR <HTTPError 404: 'Not Found'>
+https://lurchprint.de/produkte/	ERR <HTTPError 404: 'Not Found'>
+https://lurchprint.de/autor/	ERR <HTTPError 404: 'Not Found'>
+https://lurchprint.de/ueber-mich/	ERR <HTTPError 404: 'Not Found'>
+https://lurchprint.de/das-kind-mit-der-roten-muetze/	OK
+https://lurchprint.de/episoden-von-alatar-und-dem-tannhaeuser-tor/	OK
