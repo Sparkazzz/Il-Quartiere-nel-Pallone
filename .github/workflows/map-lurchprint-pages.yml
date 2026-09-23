@@ -1,0 +1,55 @@
+name: Map Lurch Print page images
+on:
+  push:
+    branches: [lukas-author-demo]
+    paths: ['.github/workflows/map-lurchprint-pages.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: lukas-author-demo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Map images to pages
+        run: |
+          python - <<'PY'
+          import re,html,os
+          from urllib.request import Request,urlopen
+          from urllib.parse import urljoin,urlparse
+          pages=[
+            'https://lurchprint.de/',
+            'https://lurchprint.de/das-kind-mit-der-roten-muetze/',
+            'https://lurchprint.de/episoden-von-alatar-und-dem-tannhaeuser-tor/'
+          ]
+          out=[]
+          for u in pages:
+            try:
+              req=Request(u,headers={'User-Agent':'Mozilla/5.0 Chrome/127 Safari/537.36'})
+              h=urlopen(req,timeout=12).read().decode('utf-8','ignore')
+              found=[]
+              for x in re.findall(r'(?:src|data-src|data-lazy-src|href|content)=[\"\']([^\"\']+)[\"\']',h,re.I):
+                x=html.unescape(x).replace('\\/','/')
+                full=urljoin(u,x)
+                if urlparse(full).netloc.endswith('lurchprint.de') and re.search(r'\.(?:jpe?g|png|webp|gif|avif)(?:\?|$)',full,re.I):
+                  if full not in found: found.append(full)
+              for x in found: out.append((u,x))
+            except Exception as e: out.append((u,'ERROR '+repr(e)))
+          path='lukas-author-demo/assets/lurchprint/page-images.tsv'
+          os.makedirs(os.path.dirname(path),exist_ok=True)
+          with open(path,'w',encoding='utf-8') as f:
+            f.write('page\timage\n')
+            for a,b in out:f.write(a+'\t'+b+'\n')
+          PY
+      - name: Commit map
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lukas-author-demo/assets/lurchprint/page-images.tsv
+          git commit -m 'Map Lurch Print images to pages [skip ci]' || exit 0
+          git push origin HEAD:lukas-author-demo
